@@ -68,3 +68,35 @@ export const deletePlayer = async (req, res) => {
 };
 
 
+// export const updateGame = async (req, res) => {
+//     const { playerId } = req.params;
+//     const { gameField, status } = req.body;
+
+//     // Ensure that the gameField is one of the allowed fields
+//     const validFields = ['gameOne', 'gameTwo', 'gameThree'];
+//     if (!validFields.includes(gameField)) {
+//         return res.status(400).send({ message: 'Invalid game field' });
+//     }
+
+//     // Ensure that the status is one of the allowed values
+//     const validStatuses = ['not decided', 'playing', 'not playing'];
+//     if (!validStatuses.includes(status)) {
+//         return res.status(400).send({ message: 'Invalid status value' });
+//     }
+
+//     try {
+//         // Find player by ID and update the specified game field
+//         const player = await Player.findById(playerId);
+//         if (!player) {
+//             return res.status(404).send({ message: 'Player not found' });
+//         }
+
+//         player[gameField] = status;
+//         await player.save();
+
+//         res.status(200).send({ message: 'Player game status updated', player });
+//     } catch (error) {
+//         console.error('Error updating player game status:', error);
+//         res.status(500).send({ message: 'Failed to update player game status' });
+//     }
+// }

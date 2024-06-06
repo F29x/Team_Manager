@@ -8,31 +8,33 @@ const Game3 = () => {
     useEffect(() => {
         axios.get('http://localhost:8008/api')
             .then(response => {
-                const playersWithStatus = response.data.data.map(player => ({
-                    ...player,
-                    status: 'Undecided'
-                }));
-                setPlayers(playersWithStatus);
+                setPlayers(response.data.data);
             })
             .catch(err => {
                 console.log(err);
             });
     }, []);
 
-    const handleStatusChange = (playerId, status) => {
-        setPlayers(players.map(player => 
-            player._id === playerId ? { ...player, status } : player
-        ));
+    const handleStatusChange = async (playerId, status) => {
+        try {
+            await axios.patch(`http://localhost:8008/api/player/update/${playerId}`, { gameThree: status });
+            setPlayers(players.map(player =>
+                player._id === playerId ? { ...player, gameThree: status } : player
+            ));
+        } catch (error) {
+            console.error('Error updating player status:', error);
+        }
     };
 
-    const getStatusButtonStyle = (playerStatus, buttonStatus) => {
-        if (playerStatus === buttonStatus) {
-            if (playerStatus === 'Playing') {
-                return { backgroundColor: 'green', color: 'white' };
-            } else if (playerStatus === 'NotPlaying') {
-                return { backgroundColor: 'red', color: 'white' };
-            } else {
-                return { backgroundColor: 'yellow', color: 'black' };
+    const getStatusButtonStyle = (gameThreeStatus, buttonStatus) => {
+        if (gameThreeStatus === buttonStatus) {
+            switch (buttonStatus) {
+                case 'playing':
+                    return { backgroundColor: 'green', color: 'white' };
+                case 'not playing':
+                    return { backgroundColor: 'red', color: 'white' };
+                default:
+                    return { backgroundColor: 'yellow', color: 'black' };
             }
         } else {
             return { backgroundColor: 'grey', color: 'white' };
@@ -61,20 +63,20 @@ const Game3 = () => {
                             <td>{player.PlayerName}</td>
                             <td>
                                 <button 
-                                    style={{ marginRight: '5px', ...getStatusButtonStyle(player.status, 'Playing') }}
-                                    onClick={() => handleStatusChange(player._id, 'Playing')}
+                                    style={{ marginRight: '5px', ...getStatusButtonStyle(player.gameThree, 'playing') }}
+                                    onClick={() => handleStatusChange(player._id, 'playing')}
                                 >
                                     Playing
                                 </button>
                                 <button 
-                                    style={{ marginRight: '5px', ...getStatusButtonStyle(player.status, 'NotPlaying') }}
-                                    onClick={() => handleStatusChange(player._id, 'NotPlaying')}
+                                    style={{ marginRight: '5px', ...getStatusButtonStyle(player.gameThree, 'not playing') }}
+                                    onClick={() => handleStatusChange(player._id, 'not playing')}
                                 >
-                                    NotPlaying
+                                    Not Playing
                                 </button>
                                 <button 
-                                    style={getStatusButtonStyle(player.status, 'Undecided')}
-                                    onClick={() => handleStatusChange(player._id, 'Undecided')}
+                                    style={getStatusButtonStyle(player.gameThree, 'not decided')}
+                                    onClick={() => handleStatusChange(player._id, 'not decided')}
                                 >
                                     Undecided
                                 </button>
